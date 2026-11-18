@@ -1,0 +1,12 @@
+<!-- SOC-LAB BEGIN -->
+<ossec_config>
+  <localfile>
+    <log_format>json</log_format>
+    <location>/logs/suricata/eve.json</location>
+  </localfile>
+  <localfile>
+    <log_format>json</log_format>
+    <location>/logs/cowrie/cowrie.json</location>
+  </localfile>
+</ossec_config>
+<!-- SOC-LAB END -->

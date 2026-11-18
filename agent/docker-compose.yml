@@ -1,0 +1,32 @@
+name: soc-agent
+services:
+  soc-agent:
+    build: .
+    container_name: soc-agent
+    hostname: soc-sensor
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      WAZUH_MANAGER: wazuh.manager
+      WAZUH_AGENT_NAME: soc-sensor
+    volumes:
+      - agent_etc:/var/ossec/etc
+      - ./localfiles.xml:/config/localfiles.xml:ro
+      - suricata_logs:/logs/suricata:ro
+      - cowrie_logs:/logs/cowrie:ro
+    networks:
+      - wazuh
+
+networks:
+  wazuh:
+    name: single-node_default
+    external: true
+
+volumes:
+  agent_etc:
+  suricata_logs:
+    name: honeylab_suricata_logs
+    external: true
+  cowrie_logs:
+    name: honeylab_cowrie_logs
+    external: true
