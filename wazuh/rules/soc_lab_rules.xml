@@ -1,0 +1,47 @@
+<!-- SOC lab custom rules (phase 4) -->
+<group name="local,soc_lab,">
+
+  <!-- Suricata signature 9000001: banner of common brute-force tools -->
+  <rule id="100100" level="10">
+    <if_sid>86601</if_sid>
+    <field name="alert.signature_id">^9000001$</field>
+    <description>SOC-LAB: brute-force tool banner from $(src_ip) against the honeypot (Suricata sid 9000001)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>soc_attack,attack,</group>
+  </rule>
+
+  <!-- Cowrie: failed login -->
+  <rule id="100110" level="8">
+    <decoded_as>json</decoded_as>
+    <field name="eventid">^cowrie\.login\.failed$</field>
+    <description>SOC-LAB: honeypot login failed for user $(username) from $(src_ip)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>soc_attack,honeypot,</group>
+  </rule>
+
+  <!-- Cowrie: login accepted -->
+  <rule id="100111" level="12">
+    <decoded_as>json</decoded_as>
+    <field name="eventid">^cowrie\.login\.success$</field>
+    <description>SOC-LAB: honeypot accepted credentials for user $(username) from $(src_ip)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>soc_attack,honeypot,</group>
+  </rule>
+
+  <!-- Correlation: 4 hostile events from the same source address in 5 minutes -->
+  <rule id="100130" level="13" frequency="4" timeframe="300">
+    <if_matched_group>soc_attack</if_matched_group>
+    <same_field>src_ip</same_field>
+    <description>SOC-LAB: correlated hostile activity from $(src_ip) seen by Suricata and Cowrie</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+
+</group>
