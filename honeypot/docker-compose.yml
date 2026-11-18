@@ -1,0 +1,60 @@
+name: honeylab
+
+services:
+  cowrie:
+    image: cowrie/cowrie:latest
+    container_name: cowrie
+    restart: unless-stopped
+    environment:
+      - COWRIE_HONEYPOT_HOSTNAME=srv-web-01
+    volumes:
+      - cowrie_logs:/cowrie/cowrie-git/var/log/cowrie
+      - cowrie_downloads:/cowrie/cowrie-git/var/lib/cowrie/downloads
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.10
+    mem_limit: 512m
+
+  suricata:
+    image: jasonish/suricata:7.0.11
+    container_name: suricata
+    restart: unless-stopped
+    network_mode: "service:cowrie"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    environment:
+      - SURICATA_OPTIONS=-i eth0 -k none -v
+    volumes:
+      - suricata_logs:/var/log/suricata
+      - suricata_lib:/var/lib/suricata
+      - suricata_etc:/etc/suricata
+    depends_on:
+      - cowrie
+    mem_limit: 1536m
+
+  attacker:
+    build: ../attacker
+    image: soc-attacker:local
+    container_name: attacker
+    profiles: ["attack"]
+    command: sleep infinity
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.50
+    mem_limit: 256m
+
+networks:
+  honeynet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+volumes:
+  cowrie_logs:
+  cowrie_downloads:
+  suricata_logs:
+  suricata_lib:
+  suricata_etc:

@@ -5,4 +5,5 @@ Containerized blue-team lab on Docker Desktop (Windows 11, WSL2).
 | Phase | Topic | Status |
 |---|---|---|
 | 0 | Foundations | done |
-| 1 | Wazuh | in progress |
+| 1 | Wazuh | done |
+| 2 | Cowrie + Suricata | done |
